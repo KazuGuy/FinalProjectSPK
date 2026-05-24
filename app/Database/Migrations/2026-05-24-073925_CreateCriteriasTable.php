@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
@@ -13,24 +15,24 @@ class CreateCriteriasTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'kode_kriteria' => [
+            'code' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '10',
+                'constraint' => '5',
+                'unique'     => true,
             ],
-            'nama_kriteria' => [
+            'name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
             ],
-            'jenis' => [
+            'type' => [
                 'type'       => 'ENUM',
-                'constraint' => ['benefit', 'cost'],
+                'constraint' => ['cost', 'benefit'],
             ],
-            'bobot' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '5,4',
+            'default_weight' => [
+                'type'       => 'DOUBLE',
             ],
-            'created_at' => ['type' => 'DATETIME', 'null' => true],
-            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            'created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
+            'updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
         ]);
         $this->forge->addKey('id', true);
         $this->forge->createTable('criterias');

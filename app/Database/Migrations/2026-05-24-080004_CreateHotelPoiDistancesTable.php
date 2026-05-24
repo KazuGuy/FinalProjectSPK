@@ -1,8 +1,10 @@
+<?php
+
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateEvaluationsTable extends Migration
+class CreateHotelPoiDistancesTable extends Migration
 {
     public function up()
     {
@@ -13,34 +15,32 @@ class CreateEvaluationsTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'alternative_id' => [
+            'hotel_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'criteria_id' => [
+            'poi_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'nilai' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '10,2',
+            'jarak_km' => [
+                'type'       => 'DOUBLE',
             ],
-            'created_at' => ['type' => 'DATETIME', 'null' => true],
-            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            'created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
         ]);
         $this->forge->addKey('id', true);
         
-        // Relasi antar tabel
-        $this->forge->addForeignKey('alternative_id', 'alternatives', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('criteria_id', 'criterias', 'id', 'CASCADE', 'CASCADE');
+        // Pengaturan Foreign Key Cascade
+        $this->forge->addForeignKey('hotel_id', 'hotels', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('poi_id', 'points_of_interest', 'id', 'CASCADE', 'CASCADE');
         
-        $this->forge->createTable('evaluations');
+        $this->forge->createTable('hotel_poi_distances');
     }
 
     public function down()
     {
-        $this->forge->dropTable('evaluations');
+        $this->forge->dropTable('hotel_poi_distances');
     }
 }
