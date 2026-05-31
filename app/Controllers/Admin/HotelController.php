@@ -37,6 +37,10 @@ class HotelController extends BaseController
 
         return redirect()->to('/admin/hotels')->with('success', 'Hotel berhasil ditambahkan.');
     }
+    public function create()
+    {
+        return view('admin/hotels/form', ['hotel' => null]);
+    }
 
     public function update(int $id)
     {

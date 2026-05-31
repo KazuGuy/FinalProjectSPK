@@ -7,6 +7,20 @@ use App\Models\HotelPoiDistanceModel;
 
 class PoiController extends BaseController
 {
+    protected PoiModel $model;
+    public function __construct()
+    {
+        $this->model = new PoiModel();
+    }
+    public function index(){
+         return view('admin/poi/index', [
+            'pois' => $this->model->orderBy('id')->findAll(),
+        ]);
+    }
+    public function create()
+    {
+        return view('admin/poi/form', ['poi' => null]);
+    }
     public function store()
     {
         $poiModel      = new PoiModel();
