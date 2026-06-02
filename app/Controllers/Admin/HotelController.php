@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\HotelModel;
 use App\Models\HotelPoiDistanceModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class HotelController extends BaseController
 {
@@ -21,6 +22,22 @@ class HotelController extends BaseController
         return view('admin/hotels/index', [
             'hotels' => $this->model->getWithAvgDistance(),
         ]);
+    }
+
+    public function create()
+    {
+        return view('admin/hotels/form');
+    }
+
+    public function edit(int $id)
+    {
+        $hotel = $this->model->find($id);
+
+        if (!$hotel) {
+            throw PageNotFoundException::forPageNotFound('Hotel tidak ditemukan.');
+        }
+
+        return view('admin/hotels/form', ['hotel' => $hotel]);
     }
 
     public function store()

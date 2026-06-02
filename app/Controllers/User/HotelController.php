@@ -11,22 +11,25 @@ class HotelController extends BaseController
 {
     public function search()
     {
-        $model   = new HotelModel();
-        $builder = $model->builder();
+        $model = new HotelModel();
+        $model->select(
+            'hotels.*, (SELECT AVG(jarak_km) FROM hotel_poi_distances hpd WHERE hpd.hotel_id = hotels.id) AS avg_distance',
+            false
+        );
 
         $filters = $this->request->getGet();
 
         // Filter
         if (!empty($filters['q']))
-            $builder->like('name', $filters['q']);
+            $model->like('name', $filters['q']);
         if (!empty($filters['min_price']))
-            $builder->where('price >=', (float) $filters['min_price']);
+            $model->where('price >=', (float) $filters['min_price']);
         if (!empty($filters['max_price']))
-            $builder->where('price <=', (float) $filters['max_price']);
+            $model->where('price <=', (float) $filters['max_price']);
         if (!empty($filters['min_rating']))
-            $builder->where('rating >=', (float) $filters['min_rating']);
+            $model->where('rating >=', (float) $filters['min_rating']);
         if (!empty($filters['min_discount']))
-            $builder->where('discount >', 0);
+            $model->where('discount >', 0);
 
         // Sort
         $sortMap = [
@@ -37,7 +40,7 @@ class HotelController extends BaseController
             'facilities_desc' => ['facilities_count', 'DESC'],
         ];
         [$col, $dir] = $sortMap[$filters['sort'] ?? 'rating_desc'] ?? ['rating', 'DESC'];
-        $builder->orderBy($col, $dir);
+        $model->orderBy($col, $dir);
 
         $hotels = $model->paginate(10);
         $pager  = $model->pager;

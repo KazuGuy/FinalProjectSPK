@@ -36,7 +36,7 @@ class DssController extends BaseController
             'id'          => $h['id'],
             'name'        => $h['name'],
             'C1'          => $h['price'],           // Harga (cost)
-            'C2'          => $h['rating'],           // Rating (benefit)
+            'C2'          => $h['rating'],           // Skor review pengguna (benefit)
             'C3'          => $h['avg_distance'],     // Jarak ke POI (cost)
             'C4'          => $h['facilities_count'], // Fasilitas (benefit)
             'C5'          => $h['discount'],         // Diskon (benefit)

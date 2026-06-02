@@ -62,7 +62,7 @@
                     Cost — makin kecil makin baik
                 </option>
             </select>
-            <div class="form-hint">Contoh Benefit: rating, fasilitas. Contoh Cost: harga, jarak.</div>
+            <div class="form-hint">Contoh Benefit: skor review pengguna, fasilitas. Contoh Cost: harga, jarak.</div>
         </div>
 
         <div class="form-group">

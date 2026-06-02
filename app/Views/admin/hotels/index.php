@@ -16,7 +16,7 @@
                 <th>#</th>
                 <th>Nama Hotel</th>
                 <th>Harga/Malam</th>
-                <th>Rating</th>
+                <th>Skor Review</th>
                 <th>Diskon</th>
                 <th>Fasilitas</th>
                 <th>Avg. Jarak POI</th>
@@ -36,7 +36,7 @@
                 <td style="color:var(--muted)"><?= $i + 1 ?></td>
                 <td><strong><?= esc($h['name']) ?></strong></td>
                 <td>Rp <?= number_format($h['price'], 0, ',', '.') ?></td>
-                <td>⭐ <?= $h['rating'] ?></td>
+                <td><span class="review-score"><?= number_format((float) $h['rating'], 1) ?></span></td>
                 <td>
                     <?php if ($h['discount'] > 0): ?>
                         <span class="badge" style="background:#fef9c3;color:#854d0e"><?= $h['discount'] ?>% OFF</span>

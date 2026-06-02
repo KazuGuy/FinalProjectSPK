@@ -31,7 +31,7 @@
             <select id="sortHotel" class="form-control" style="max-width:200px" onchange="filterCards()">
                 <option value="">Urutkan</option>
                 <option value="price_asc">Harga Terendah</option>
-                <option value="rating_desc">Rating Tertinggi</option>
+                <option value="rating_desc">Skor Review Tertinggi</option>
                 <option value="discount_desc">Diskon Terbesar</option>
             </select>
         </div>
@@ -46,9 +46,12 @@
                 style="position:absolute; top:0.75rem; right:0.75rem"
                 onchange="updateCounter()">
             <div style="font-weight:600; font-size:0.9375rem; margin-bottom:0.375rem; padding-right:1.5rem"><?= esc($h['name']) ?></div>
-            <div style="font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem">
-                ⭐ <?= $h['rating'] ?> &nbsp;·&nbsp; <?= $h['facilities_count'] ?> fasilitas
-                <?php if ($h['discount'] > 0): ?>&nbsp;·&nbsp; <span style="color:#b45309"><?= $h['discount'] ?>% OFF</span><?php endif; ?>
+            <div style="font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem; display:flex; flex-wrap:wrap; align-items:center; gap:0.45rem">
+                <span class="review-score" style="height:26px; min-width:38px; font-size:0.78rem"><?= number_format((float) $h['rating'], 1) ?></span>
+                <span>skor review</span>
+                <span>&middot;</span>
+                <span><?= $h['facilities_count'] ?> fasilitas</span>
+                <?php if ($h['discount'] > 0): ?><span>&middot;</span><span style="color:#b45309"><?= $h['discount'] ?>% OFF</span><?php endif; ?>
             </div>
             <div style="font-size:1rem; font-weight:700; color:var(--primary)">
                 Rp <?= number_format($h['price'], 0, ',', '.') ?>
@@ -56,7 +59,7 @@
             </div>
             <?php if (isset($h['avg_distance'])): ?>
             <div style="font-size:0.78rem; color:var(--muted); margin-top:0.375rem">
-                📍 <?= number_format($h['avg_distance'], 1) ?> km dari POI
+                <?= number_format($h['avg_distance'], 1) ?> km dari POI
             </div>
             <?php endif; ?>
         </label>
@@ -64,7 +67,7 @@
     </div>
 
     <!-- Sticky bottom bar -->
-    <div style="position:fixed; bottom:0; left:240px; right:0; background:white; border-top:1px solid var(--border); padding:0.875rem 1.75rem; display:flex; align-items:center; justify-content:space-between; z-index:99">
+    <div style="position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid var(--border); padding:0.875rem max(1rem, calc((100vw - 1180px) / 2)); display:flex; align-items:center; justify-content:space-between; z-index:99">
         <span id="counter" style="font-size:0.875rem; color:var(--muted)">0 hotel dipilih (min. 2)</span>
         <button type="submit" id="btnNext" class="btn btn-primary" disabled>
             Lanjut Atur Bobot →

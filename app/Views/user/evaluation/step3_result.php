@@ -87,8 +87,9 @@
     </div>
     <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:0.75rem">
         <?php foreach ($criterias as $c): ?>
+        <?php $criteriaName = ($c['code'] ?? '') === 'C2' ? 'Skor Review Pengguna' : $c['name']; ?>
         <div style="background:var(--bg); border-radius:6px; padding:0.75rem">
-            <div style="font-size:0.75rem; color:var(--muted)"><?= esc($c['name']) ?></div>
+            <div style="font-size:0.75rem; color:var(--muted)"><?= esc($criteriaName) ?></div>
             <div style="font-weight:700; font-size:1.125rem; color:var(--primary); margin-top:0.125rem">
                 <?= number_format($c['weight'] * 100, 1) ?>%
             </div>

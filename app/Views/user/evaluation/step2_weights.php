@@ -35,10 +35,11 @@
             <?= csrf_field() ?>
 
             <?php foreach ($criterias as $c): ?>
+            <?php $criteriaName = ($c['code'] ?? '') === 'C2' ? 'Skor Review Pengguna' : $c['name']; ?>
             <div style="margin-bottom:1.375rem; padding-bottom:1.375rem; border-bottom:1px solid var(--border)">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.625rem">
                     <div>
-                        <span style="font-weight:500; font-size:0.9rem"><?= esc($c['name']) ?></span>
+                        <span style="font-weight:500; font-size:0.9rem"><?= esc($criteriaName) ?></span>
                         <span class="badge badge-<?= $c['type'] ?>" style="margin-left:0.5rem; font-size:0.7rem">
                             <?= $c['type'] === 'benefit' ? '↑ Benefit' : '↓ Cost' ?>
                         </span>

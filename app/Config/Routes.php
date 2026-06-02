@@ -16,17 +16,21 @@ $routes->setAutoRoute(false);
 $routes->get('/',       'AuthController::login');
 $routes->get('login',   'AuthController::login');
 $routes->post('login',  'AuthController::loginProcess');
+$routes->get('register', 'AuthController::register');
+$routes->post('register', 'AuthController::registerProcess');
+$routes->get('guest',   'AuthController::guestLogin');
 $routes->get('logout',  'AuthController::logout');
 
 // ── Admin ─────────────────────────────────────────────────────
 $routes->group('admin', ['filter' => 'role:admin'], function($routes) {
+    $routes->get('dashboard',               'Admin\DashboardController::index');
 
     // Criteria
     $routes->get('criteria',                'Admin\CriteriaController::index');
     $routes->get('criteria/create',         'Admin\CriteriaController::create');
     $routes->post('criteria',               'Admin\CriteriaController::store');
     $routes->get('criteria/(:num)/edit',    'Admin\CriteriaController::edit/$1');
-    $routes->post('criteria/(:num)',        'Admin\CriteriaController::update/$1');
+    $routes->put('criteria/(:num)',         'Admin\CriteriaController::update/$1');
     $routes->delete('criteria/(:num)',      'Admin\CriteriaController::delete/$1');
 
     // Hotels
@@ -34,7 +38,7 @@ $routes->group('admin', ['filter' => 'role:admin'], function($routes) {
     $routes->get('hotels/create',           'Admin\HotelController::create');
     $routes->post('hotels',                 'Admin\HotelController::store');
     $routes->get('hotels/(:num)/edit',      'Admin\HotelController::edit/$1');
-    $routes->post('hotels/(:num)',          'Admin\HotelController::update/$1');
+    $routes->put('hotels/(:num)',           'Admin\HotelController::update/$1');
     $routes->delete('hotels/(:num)',        'Admin\HotelController::delete/$1');
 
     // POI
@@ -42,15 +46,18 @@ $routes->group('admin', ['filter' => 'role:admin'], function($routes) {
     $routes->get('poi/create',              'Admin\PoiController::create');
     $routes->post('poi',                    'Admin\PoiController::store');
     $routes->get('poi/(:num)/edit',         'Admin\PoiController::edit/$1');
-    $routes->post('poi/(:num)',             'Admin\PoiController::update/$1');
+    $routes->put('poi/(:num)',              'Admin\PoiController::update/$1');
     $routes->delete('poi/(:num)',           'Admin\PoiController::delete/$1');
 });
 
 // ── User / Guest ──────────────────────────────────────────────
 $routes->get('hotels',                      'User\HotelController::search');
-$routes->get('evaluation',                  'User\EvaluationController::selectAlternatives');
-$routes->post('evaluation/weights',         'User\EvaluationController::setWeights');
-$routes->post('evaluation/calculate',       'User\EvaluationController::calculate');
+$routes->get('poi',                         'User\PoiController::index');
+$routes->group('evaluation', ['filter' => 'role:user'], function($routes) {
+    $routes->get('/',                       'User\EvaluationController::selectAlternatives');
+    $routes->post('weights',                'User\EvaluationController::setWeights');
+    $routes->post('calculate',              'User\EvaluationController::calculate');
+});
 
 // ── API untuk Flutter ─────────────────────────────────────────
 $routes->group('api', function($routes) {

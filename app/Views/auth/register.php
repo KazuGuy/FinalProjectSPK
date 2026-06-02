@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk - TravelDSS</title>
+    <title>Daftar - TravelDSS</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -14,7 +14,6 @@
             --text: #1f2d3d;
             --muted: #68788c;
             --surface: #ffffff;
-            --bg: #f5f7fb;
             --radius: 8px;
         }
         body {
@@ -31,7 +30,7 @@
         .auth-shell {
             width: min(980px, 100%);
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 410px;
+            grid-template-columns: minmax(0, 1fr) 430px;
             gap: 1.25rem;
             align-items: center;
         }
@@ -56,10 +55,9 @@
         }
         .auth-copy h1 {
             max-width: 640px;
-            font-size: clamp(2rem, 5vw, 3.8rem);
+            font-size: clamp(2rem, 5vw, 3.6rem);
             line-height: 1.04;
             font-weight: 850;
-            letter-spacing: 0;
         }
         .auth-copy p {
             max-width: 520px;
@@ -74,23 +72,10 @@
             box-shadow: 0 20px 48px rgba(31,45,61,0.24);
             padding: 1.35rem;
         }
-        .auth-card h2 {
-            font-size: 1.35rem;
-            font-weight: 850;
-            margin-bottom: 0.2rem;
-        }
-        .auth-card .subtitle {
-            color: var(--muted);
-            font-size: 0.9rem;
-            margin-bottom: 1.1rem;
-        }
+        .auth-card h2 { font-size: 1.35rem; font-weight: 850; margin-bottom: 0.2rem; }
+        .auth-card .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.1rem; }
         .form-group { margin-bottom: 0.95rem; }
-        .form-label {
-            display: block;
-            margin-bottom: 0.34rem;
-            font-size: 0.82rem;
-            font-weight: 750;
-        }
+        .form-label { display: block; margin-bottom: 0.34rem; font-size: 0.82rem; font-weight: 750; }
         .form-control {
             width: 100%;
             min-height: 42px;
@@ -119,8 +104,6 @@
             text-decoration: none;
         }
         .btn-primary { background: var(--accent); color: #fff; }
-        .btn-ghost { background: #fff; color: var(--primary-dark); border-color: var(--border); }
-        .auth-actions { display: grid; gap: 0.65rem; margin-top: 0.35rem; }
         .alert-error {
             background: #fff0ee;
             color: #d93025;
@@ -131,6 +114,7 @@
             font-weight: 650;
             margin-bottom: 1rem;
         }
+        .alert-error div + div { margin-top: 0.3rem; }
         .auth-footer {
             margin-top: 1rem;
             color: var(--muted);
@@ -151,20 +135,29 @@
                 <span class="brand-mark">TD</span>
                 <span>TravelDSS</span>
             </a>
-            <h1>Bandingkan hotel dengan data, bukan tebakan.</h1>
-            <p>Cari hotel dan POI sebagai guest, lalu masuk sebagai pengguna untuk menjalankan evaluasi DSS MABAC.</p>
+            <h1>Buat akun pengguna untuk evaluasi DSS.</h1>
+            <p>Registrasi ini hanya membuat akun user. Akun admin dibuat oleh sistem melalui seeder atau proses internal.</p>
         </section>
 
-        <section class="auth-card" aria-label="Form login">
-            <h2>Masuk</h2>
-            <p class="subtitle">Gunakan akun pengguna atau admin yang sudah disediakan sistem.</p>
+        <section class="auth-card" aria-label="Form registrasi">
+            <h2>Daftar Pengguna</h2>
+            <p class="subtitle">Setelah daftar, Anda langsung masuk dan dapat memakai evaluasi MABAC.</p>
 
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="alert-error"><?= esc(session()->getFlashdata('error')) ?></div>
+            <?php if (session()->getFlashdata('errors')): ?>
+                <div class="alert-error">
+                    <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                        <div><?= esc($error) ?></div>
+                    <?php endforeach; ?>
+                </div>
             <?php endif; ?>
 
-            <form method="POST" action="/login">
+            <form method="POST" action="/register">
                 <?= csrf_field() ?>
+                <div class="form-group">
+                    <label class="form-label">Nama</label>
+                    <input type="text" name="name" class="form-control"
+                        value="<?= old('name') ?>" placeholder="Nama lengkap" required>
+                </div>
                 <div class="form-group">
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-control"
@@ -173,16 +166,18 @@
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <input type="password" name="password" class="form-control"
-                        placeholder="Password akun" required>
+                        placeholder="Minimal 6 karakter" required>
                 </div>
-                <div class="auth-actions">
-                    <button type="submit" class="btn btn-primary">Masuk</button>
-                    <a href="/guest" class="btn btn-ghost">Lanjut sebagai guest</a>
+                <div class="form-group">
+                    <label class="form-label">Konfirmasi Password</label>
+                    <input type="password" name="password_confirm" class="form-control"
+                        placeholder="Ulangi password" required>
                 </div>
+                <button type="submit" class="btn btn-primary">Buat Akun User</button>
             </form>
 
             <div class="auth-footer">
-                Belum punya akun? <a href="/register">Daftar sebagai pengguna</a>
+                Sudah punya akun? <a href="/login">Masuk</a>
             </div>
         </section>
     </div>

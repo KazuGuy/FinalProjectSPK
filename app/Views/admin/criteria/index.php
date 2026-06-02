@@ -32,10 +32,11 @@
             </tr>
             <?php else: ?>
             <?php foreach ($criterias as $i => $c): ?>
+            <?php $criteriaName = ($c['code'] ?? '') === 'C2' ? 'Skor Review Pengguna' : $c['name']; ?>
             <tr>
                 <td style="color: var(--muted)"><?= $i + 1 ?></td>
                 <td><code style="background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:0.8rem"><?= esc($c['code']) ?></code></td>
-                <td><?= esc($c['name']) ?></td>
+                <td><?= esc($criteriaName) ?></td>
                 <td>
                     <span class="badge badge-<?= $c['type'] ?>">
                         <?= $c['type'] === 'benefit' ? '↑ Benefit' : '↓ Cost' ?>

@@ -86,7 +86,7 @@ class EvaluationController extends BaseController
             'id'   => $h['id'],
             'name' => $h['name'],
             'C1'   => $h['price'],            // cost
-            'C2'   => $h['rating'],            // benefit
+            'C2'   => $h['rating'],            // review score, benefit
             'C3'   => $h['avg_distance'] ?? 0, // cost
             'C4'   => $h['facilities_count'],  // benefit
             'C5'   => $h['discount'],          // benefit
