@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk - TravelDSS</title>
+
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -157,7 +157,6 @@
 
         <section class="auth-card" aria-label="Form login">
             <h2>Masuk</h2>
-            <p class="subtitle">Gunakan akun pengguna atau admin yang sudah disediakan sistem.</p>
 
             <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert-error"><?= esc(session()->getFlashdata('error')) ?></div>

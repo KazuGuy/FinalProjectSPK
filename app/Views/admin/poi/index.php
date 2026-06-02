@@ -11,7 +11,6 @@
 
 <div class="card">
     <table>
-        <thead>
             <tr>
                 <th>#</th>
                 <th>Nama POI</th>

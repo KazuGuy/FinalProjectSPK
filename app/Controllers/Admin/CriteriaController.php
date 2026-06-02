@@ -38,7 +38,13 @@ class CriteriaController extends BaseController
 
     public function edit(int $id)
     {
-        return view('admin/criteria/form', ['criteria' => $this->model->findOrFail($id)]);
+        $criteria = $this->model->find($id);
+
+        if (!$criteria) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Kriteria tidak ditemukan.');
+        }
+
+        return view('admin/criteria/form', ['criteria' => $criteria]);
     }
 
     public function update(int $id)

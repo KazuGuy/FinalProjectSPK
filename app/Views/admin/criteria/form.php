@@ -68,7 +68,7 @@
         <div class="form-group">
             <label class="form-label">Bobot Default <span style="color:#ef4444">*</span></label>
             <input
-                type="number"
+                type="text"
                 name="default_weight"
                 class="form-control"
                 value="<?= old('default_weight', $criteria['default_weight'] ?? 1) ?>"

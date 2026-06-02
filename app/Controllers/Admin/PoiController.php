@@ -35,21 +35,17 @@ class PoiController extends BaseController
             return redirect()->back()->withInput()
                 ->with('errors', $this->validator->getErrors());
         }
-
         $id = $this->model->insert($this->request->getPost());
         $this->distanceModel->recalculateForPoi($id);
-
         return redirect()->to('/admin/poi')->with('success', 'POI berhasil ditambahkan.');
     }
 
     public function edit(int $id)
     {
         $poi = $this->model->find($id);
-
         if (!$poi) {
             throw PageNotFoundException::forPageNotFound('POI tidak ditemukan.');
         }
-
         return view('admin/poi/form', ['poi' => $poi]);
     }
 
@@ -59,10 +55,8 @@ class PoiController extends BaseController
             return redirect()->back()->withInput()
                 ->with('errors', $this->validator->getErrors());
         }
-
         $this->model->update($id, $this->request->getPost());
         $this->distanceModel->recalculateForPoi($id);
-
         return redirect()->to('/admin/poi')->with('success', 'POI berhasil diperbarui.');
     }
 
