@@ -9,6 +9,14 @@ use App\Models\MabacModel;
 
 class EvaluationController extends BaseController
 {
+        private const CRITERIA_FIELD_MAP = [
+        'C1' => 'price',
+        'C2' => 'rating',
+        'C3' => 'poi_distance',  // ← ganti dari avg_distance
+        'C4' => 'facilities_count',
+        'C5' => 'discount',
+        'C6' => 'type_score',
+    ];
     /**
      * Step 1 — Pilih Alternatif (hotel)
      * User centang hotel mana saja yang ingin dibandingkan
@@ -17,6 +25,7 @@ class EvaluationController extends BaseController
     {
         return view('user/evaluation/step1_alternatives', [
             'hotels' => (new HotelModel())->getWithAvgDistance(),
+            'pois'   => (new \App\Models\PoiModel())->findAll(), // ← tambah
         ]);
     }
 
@@ -27,19 +36,24 @@ class EvaluationController extends BaseController
     public function setWeights()
     {
         $selectedIds = $this->request->getPost('hotel_ids');
+        $selectedPoi = $this->request->getPost('poi_id');
 
-        // Validasi minimal 2 alternatif
         if (empty($selectedIds) || count($selectedIds) < 2) {
             return redirect()->back()
                 ->with('error', 'Pilih minimal 2 hotel untuk dibandingkan.');
         }
 
-        // Simpan pilihan di session sementara
+        if (empty($selectedPoi)) {
+            return redirect()->back()
+                ->with('error', 'Pilih POI acuan jarak terlebih dahulu.');
+        }
+
         session()->set('eval_hotel_ids', $selectedIds);
+        session()->set('eval_poi_id', $selectedPoi);
 
         return view('user/evaluation/step2_weights', [
-            'criterias'    => (new CriteriaModel())->findAll(),
-            'selectedCount'=> count($selectedIds),
+            'criterias'     => (new CriteriaModel())->findAll(),
+            'selectedCount' => count($selectedIds),
         ]);
     }
 
@@ -71,9 +85,11 @@ class EvaluationController extends BaseController
         }
         unset($c);
 
-        // ── Dataset hotel yang dipilih ─────────────────────────
-        $distanceModel = new HotelPoiDistanceModel();
-        $hotelsRaw     = $hotelModel->getWithAvgDistance();
+    // ── Dataset hotel yang dipilih ─────────────────────────
+    $poiId     = session()->get('eval_poi_id');
+    $hotelsRaw = $poiId
+        ? $hotelModel->getWithDistanceToPoi((int) $poiId)
+        : $hotelModel->getWithAvgDistance();
 
         // Filter hanya hotel yang dipilih user
         $hotels = array_values(array_filter(
@@ -81,16 +97,20 @@ class EvaluationController extends BaseController
             fn($h) => in_array($h['id'], $hotelIds)
         ));
 
+
+        
         // Map ke format kriteria
-        $hotels = array_map(fn($h) => [
-            'id'   => $h['id'],
-            'name' => $h['name'],
-            'C1'   => $h['price'],            // cost
-            'C2'   => $h['rating'],            // review score, benefit
-            'C3'   => $h['avg_distance'] ?? 0, // cost
-            'C4'   => $h['facilities_count'],  // benefit
-            'C5'   => $h['discount'],          // benefit
-        ], $hotels);
+        $hotels = array_map(function($h) use ($criterias) {
+            $row = [
+                'id'   => $h['id'],
+                'name' => $h['name'],
+            ];
+            foreach ($criterias as $c) {
+                $field       = self::CRITERIA_FIELD_MAP[$c['code']] ?? null;
+                $row[$c['code']] = $field ? ($h[$field] ?? 0) : 0;
+            }
+            return $row;
+        }, $hotels);
 
         $results = $mabac->calculate($hotels, $criterias);
 

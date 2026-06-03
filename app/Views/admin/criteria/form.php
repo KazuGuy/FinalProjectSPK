@@ -20,69 +20,36 @@
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="<?= $isEdit ? "/admin/criteria/{$criteria['id']}" : '/admin/criteria' ?>">
+    <form method="POST" action="/admin/criteria/<?= $criteria['id'] ?>">
         <?= csrf_field() ?>
-        <?php if ($isEdit): ?>
-            <input type="hidden" name="_method" value="PUT">
-        <?php endif; ?>
 
         <div class="form-group">
-            <label class="form-label">Kode <span style="color:#ef4444">*</span></label>
-            <input
-                type="text"
-                name="code"
-                class="form-control"
-                value="<?= old('code', $criteria['code'] ?? '') ?>"
-                placeholder="C1, C2, ..."
-                maxlength="5"
-                <?= $isEdit ? '' : '' ?>
-            >
-            <div class="form-hint">Maksimal 5 karakter, unik (contoh: C1, C2)</div>
+            <label class="form-label">Kode</label>
+            <input type="text" class="form-control" value="<?= esc($criteria['code']) ?>" disabled>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Nama Kriteria <span style="color:#ef4444">*</span></label>
-            <input
-                type="text"
-                name="name"
-                class="form-control"
-                value="<?= old('name', $criteria['name'] ?? '') ?>"
-                placeholder="contoh: Harga Per Malam"
-                maxlength="100"
-            >
+            <label class="form-label">Nama Kriteria</label>
+            <input type="text" class="form-control" value="<?= esc($criteria['name']) ?>" disabled>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Tipe <span style="color:#ef4444">*</span></label>
+            <label class="form-label">Tipe *</label>
             <select name="type" class="form-control">
-                <option value="benefit" <?= old('type', $criteria['type'] ?? '') === 'benefit' ? 'selected' : '' ?>>
-                    Benefit — makin besar makin baik
-                </option>
-                <option value="cost" <?= old('type', $criteria['type'] ?? '') === 'cost' ? 'selected' : '' ?>>
-                    Cost — makin kecil makin baik
-                </option>
+                <option value="benefit" <?= $criteria['type'] === 'benefit' ? 'selected' : '' ?>>Benefit — makin besar makin baik</option>
+                <option value="cost"    <?= $criteria['type'] === 'cost'    ? 'selected' : '' ?>>Cost — makin kecil makin baik</option>
             </select>
-            <div class="form-hint">Contoh Benefit: skor review pengguna, fasilitas. Contoh Cost: harga, jarak.</div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Bobot Default <span style="color:#ef4444">*</span></label>
-            <input
-                type="text"
-                name="default_weight"
-                class="form-control"
-                value="<?= old('default_weight', $criteria['default_weight'] ?? 1) ?>"
-                step="0.1"
-                min="0.1"
-                placeholder="1"
-            >
-            <div class="form-hint">Bobot relatif antar kriteria. Akan dinormalisasi otomatis saat evaluasi.</div>
+            <label class="form-label">Bobot Default *</label>
+            <input type="number" name="default_weight" class="form-control"
+                value="<?= $criteria['default_weight'] ?>"
+                step="any" min="0.1">
         </div>
 
         <div style="display:flex; gap:0.75rem; margin-top:1.5rem">
-            <button type="submit" class="btn btn-primary">
-                <?= $isEdit ? 'Simpan Perubahan' : 'Tambah Kriteria' ?>
-            </button>
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             <a href="/admin/criteria" class="btn btn-ghost">Batal</a>
         </div>
     </form>

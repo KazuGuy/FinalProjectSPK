@@ -20,50 +20,30 @@ class CriteriaController extends BaseController
         ]);
     }
 
-    public function create()
-    {
-        return view('admin/criteria/form');
-    }
-
-    public function store()
-    {
-        if (!$this->validate($this->model->validationRules)) {
-            return redirect()->back()->withInput()
-                ->with('errors', $this->validator->getErrors());
-        }
-
-        $this->model->insert($this->request->getPost());
-        return redirect()->to('/admin/criteria')->with('success', 'Kriteria berhasil ditambahkan.');
-    }
-
     public function edit(int $id)
     {
         $criteria = $this->model->find($id);
-
         if (!$criteria) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Kriteria tidak ditemukan.');
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
-
         return view('admin/criteria/form', ['criteria' => $criteria]);
     }
 
     public function update(int $id)
     {
-        $rules = $this->model->validationRules;
-        $rules['code'] = "required|max_length[5]|is_unique[criterias.code,id,{$id}]";
-
-        if (!$this->validate($rules)) {
+        if (!$this->validate([
+            'default_weight' => 'required|numeric|greater_than[0]',
+            'type'           => 'required|in_list[cost,benefit]',
+        ])) {
             return redirect()->back()->withInput()
                 ->with('errors', $this->validator->getErrors());
         }
 
-        $this->model->update($id, $this->request->getPost());
-        return redirect()->to('/admin/criteria')->with('success', 'Kriteria berhasil diperbarui.');
-    }
+        $data = $this->request->getPost(['default_weight', 'type']);
+        $data['default_weight'] = (float) str_replace(',', '.', $data['default_weight']);
 
-    public function delete(int $id)
-    {
-        $this->model->delete($id);
-        return redirect()->to('/admin/criteria')->with('success', 'Kriteria berhasil dihapus.');
+        $this->model->update($id, $data);
+        return redirect()->to('/admin/criteria')
+            ->with('success', 'Kriteria berhasil diperbarui.');
     }
 }

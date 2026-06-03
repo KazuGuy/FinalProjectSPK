@@ -13,7 +13,6 @@ $initLng = $hasCoord ? (float) $lngValue : 106.8456;
 <div class="page-header">
     <div>
         <h1><?= $isEdit ? 'Edit Hotel' : 'Tambah Hotel' ?></h1>
-        <p>Cari lokasi lewat OpenStreetMap, lalu sesuaikan pin bila diperlukan.</p>
     </div>
     <a href="/admin/hotels" class="btn btn-ghost">Kembali</a>
 </div>
@@ -42,19 +41,30 @@ $initLng = $hasCoord ? (float) $lngValue : 106.8456;
                     value="<?= old('name', $hotel['name'] ?? '') ?>"
                     placeholder="Contoh: Hotel Grand Melia" required>
             </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tipe Penginapan *</label>
+                <select name="type" class="form-control" required>
+                    <option value="hotel"      <?= old('type', $hotel['type'] ?? '') === 'hotel'      ? 'selected' : '' ?>>Hotel</option>
+                    <option value="resort"     <?= old('type', $hotel['type'] ?? '') === 'resort'     ? 'selected' : '' ?>>Resort</option>
+                    <option value="apartment"  <?= old('type', $hotel['type'] ?? '') === 'apartment'  ? 'selected' : '' ?>>Apartment</option>
+                    <option value="villa"      <?= old('type', $hotel['type'] ?? '') === 'villa'      ? 'selected' : '' ?>>Villa</option>
+                    <option value="guesthouse" <?= old('type', $hotel['type'] ?? '') === 'guesthouse' ? 'selected' : '' ?>>Guesthouse</option>
+                </select>
+            </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem">
                 <div class="form-group">
                     <label class="form-label">Harga/Malam (Rp) *</label>
                     <input type="number" name="price" class="form-control"
                         value="<?= old('price', $hotel['price'] ?? '') ?>"
-                        placeholder="350000" min="0" step="1000" required>
+                        placeholder="350000" min="0" step="any" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Skor Review Pengguna *</label>
                     <input type="number" name="rating" class="form-control"
                         value="<?= old('rating', $hotel['rating'] ?? '') ?>"
-                        placeholder="4.5" min="0" max="5" step="0.1" required>
+                        placeholder="4.5" min="0" max="10" step="0.1" required>
                     <div class="form-hint">Ini bukan bintang hotel, melainkan rating ulasan pengguna.</div>
                 </div>
             </div>
@@ -104,7 +114,7 @@ $initLng = $hasCoord ? (float) $lngValue : 106.8456;
 
     <section class="card">
         <div class="card-header">
-            <span class="card-title">Input Koordinat OpenStreetMap</span>
+            <span class="card-title">Input Koordinat</span>
         </div>
 
         <div class="map-search">

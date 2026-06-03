@@ -37,6 +37,20 @@
         </div>
     </div>
 
+    <!-- POI Selector -->
+    <div class="card" style="margin-bottom:1rem; padding:1rem 1.25rem; background:#eff6ff; border-color:#bfdbfe">
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap">
+            <div style="font-weight:600; font-size:0.875rem; white-space:nowrap">📍 POI Acuan Jarak:</div>
+            <select name="poi_id" class="form-control" style="max-width:300px" required>
+                <option value="">-- Pilih Point of Interest --</option>
+                <?php foreach ($pois as $poi): ?>
+                    <option value="<?= $poi['id'] ?>"><?= esc($poi['nama_poi']) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <div style="font-size:0.8rem; color:var(--muted)">Jarak hotel ke POI ini digunakan sebagai kriteria C3</div>
+        </div>
+    </div>
+
     <!-- Grid hotel -->
     <div id="hotelGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:0.875rem; margin-bottom:5rem">
         <?php foreach ($hotels as $h): ?>

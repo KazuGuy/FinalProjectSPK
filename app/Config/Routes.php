@@ -26,12 +26,9 @@ $routes->group('admin', ['filter' => 'role:admin'], function($routes) {
     $routes->get('dashboard',               'Admin\DashboardController::index');
 
     // Criteria
-    $routes->get('criteria',                'Admin\CriteriaController::index');
-    $routes->get('criteria/create',         'Admin\CriteriaController::create');
-    $routes->post('criteria',               'Admin\CriteriaController::store');
-    $routes->get('criteria/(:num)/edit',    'Admin\CriteriaController::edit/$1');
-    $routes->put('criteria/(:num)',         'Admin\CriteriaController::update/$1');
-    $routes->delete('criteria/(:num)',      'Admin\CriteriaController::delete/$1');
+    $routes->get('criteria',             'Admin\CriteriaController::index');
+    $routes->get('criteria/(:num)/edit', 'Admin\CriteriaController::edit/$1');
+    $routes->post('criteria/(:num)',     'Admin\CriteriaController::update/$1');
 
     // Hotels
     $routes->get('hotels',                  'Admin\HotelController::index');

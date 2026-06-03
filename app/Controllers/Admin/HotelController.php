@@ -47,9 +47,10 @@ class HotelController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
-        $id = $this->model->insert($this->request->getPost());
+        $data = $this->request->getPost();
+        $data['type_score'] = HotelModel::TYPE_SCORE[$data['type']] ?? 1;
 
-        // Auto-hitung jarak Haversine ke semua POI
+        $id = $this->model->insert($data);
         $this->distanceModel->recalculateForHotel($id);
 
         return redirect()->to('/admin/hotels')->with('success', 'Hotel berhasil ditambahkan.');
@@ -62,9 +63,10 @@ class HotelController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
-        $this->model->update($id, $this->request->getPost());
+        $data = $this->request->getPost();
+        $data['type_score'] = HotelModel::TYPE_SCORE[$data['type']] ?? 1;
 
-        // Recalculate jika koordinat berubah
+        $this->model->update($id, $data);
         $this->distanceModel->recalculateForHotel($id);
 
         return redirect()->to('/admin/hotels')->with('success', 'Hotel berhasil diperbarui.');

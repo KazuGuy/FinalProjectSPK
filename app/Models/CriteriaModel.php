@@ -8,7 +8,7 @@ class CriteriaModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $allowedFields    = ['code', 'name', 'type', 'default_weight'];
+    protected $allowedFields    = ['type', 'default_weight'];
     protected $useTimestamps    = true;
     protected $createdField     = 'created_at';
     protected $updatedField     = 'updated_at';
