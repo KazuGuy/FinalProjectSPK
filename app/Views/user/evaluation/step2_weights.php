@@ -35,40 +35,41 @@
             <?= csrf_field() ?>
 
             <?php foreach ($criterias as $c): ?>
-            <div style="margin-bottom:1.375rem; padding-bottom:1.375rem; border-bottom:1px solid var(--border)">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.625rem">
-                    <div>
-                        <span style="font-weight:500; font-size:0.9rem"><?= esc($c['name']) ?></span>
-                        <span class="badge badge-<?= $c['type'] ?>" style="margin-left:0.5rem; font-size:0.7rem">
-                            <?= $c['type'] === 'benefit' ? '↑ Benefit' : '↓ Cost' ?>
-                        </span>
+                <div style="margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border)">
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div>
+                            <span style="font-weight:500; font-size:0.9rem"><?= esc($c['name']) ?></span>
+                            <span class="badge badge-<?= $c['type'] ?>" style="margin-left:0.5rem; font-size:0.7rem">
+                                <?= $c['type'] === 'benefit' ? '↑ Benefit' : '↓ Cost' ?>
+                            </span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.375rem">
+                            <input
+                                type="number"
+                                name="weights[<?= $c['code'] ?>]"
+                                id="w_<?= $c['code'] ?>"
+                                min="0" max="100" step="1"
+                                value="<?= round($c['default_weight'] * 100 / (count($criterias))) ?>"
+                                data-label="<?= esc($c['name']) ?>"
+                                style="width:72px; text-align:right; padding:0.3rem 0.5rem; border:1px solid var(--border); border-radius:6px; font-size:0.9rem; font-weight:600"
+                                oninput="recalcTotal()"
+                            >
+                            <span style="font-size:0.9rem; color:var(--muted)">%</span>
+                        </div>
                     </div>
-                    <span id="display_<?= $c['code'] ?>" style="font-size:1rem; font-weight:700; color:var(--primary); min-width:2rem; text-align:right">
-                        <?= $c['default_weight'] ?>
-                    </span>
                 </div>
-                <input
-                    type="range"
-                    name="weights[<?= $c['code'] ?>]"
-                    id="w_<?= $c['code'] ?>"
-                    min="0" max="10" step="0.5"
-                    value="<?= $c['default_weight'] ?>"
-                    style="width:100%; accent-color:var(--primary)"
-                    oninput="updateWeight('<?= $c['code'] ?>', this.value)"
-                >
-                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted); margin-top:0.25rem">
-                    <span>Tidak penting</span>
-                    <span>Sangat penting</span>
-                </div>
-            </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem">
-                <div style="font-size:0.875rem; color:var(--muted)">
-                    <?= $selectedCount ?> hotel dipilih
+                <div id="totalError" style="display:none; color:#991b1b; font-size:0.875rem; margin-bottom:0.75rem">
+                    ⚠ Total bobot harus 100%
                 </div>
-                <button type="submit" class="btn btn-primary">Hitung Rekomendasi →</button>
-            </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem">
+                    <div style="font-size:0.875rem; color:var(--muted)">
+                        <?= $selectedCount ?> hotel dipilih
+                    </div>
+                    <button type="submit" id="btnCalculate" class="btn btn-primary">Hitung Rekomendasi →</button>
+                </div>
         </form>
     </div>
 
@@ -101,18 +102,28 @@ function updateWeight(code, val) {
 }
 
 function recalcTotal() {
-    const sliders = document.querySelectorAll('input[type=range]');
+    const inputs = document.querySelectorAll('input[type=number]');
     let total = 0;
     let html = '';
-    sliders.forEach(s => {
-        const v = parseFloat(s.value);
+
+    inputs.forEach(inp => {
+        const v = parseFloat(inp.value) || 0;
         total += v;
-        const code = s.id.replace('w_', '');
-        const label = s.closest('div').parentElement.querySelector('span[style*="font-weight:500"]').textContent;
-        html += `<div style="display:flex;justify-content:space-between;padding:2px 0"><span>${label}</span><strong>${v.toFixed(1)}</strong></div>`;
+        html += `<div style="display:flex;justify-content:space-between;padding:2px 0">
+            <span>${inp.dataset.label}</span>
+            <strong>${v}%</strong>
+        </div>`;
     });
-    document.getElementById('totalWeight').textContent = total.toFixed(1);
+
+    document.getElementById('totalWeight').textContent = total + '%';
     document.getElementById('weightSummary').innerHTML = html;
+
+    const isValid = Math.abs(total - 100) < 0.01;
+    document.getElementById('totalError').style.display = isValid ? 'none' : 'block';
+    document.getElementById('btnCalculate').disabled = !isValid;
+
+    // Warna total
+    document.getElementById('totalWeight').style.color = isValid ? '#166534' : '#991b1b';
 }
 
 recalcTotal();

@@ -7,20 +7,20 @@ use CodeIgniter\Database\Migration;
 class AddTypeToHotels extends Migration
 {
     public function up()
-{
-    $this->forge->addColumn('hotels', [
-        'type_score' => [
-            'type'       => 'TINYINT',
-            'constraint' => 3,
-            'not null'   => true,
-            'default'    => 1,
-            'after'      => 'type',
-        ],
-    ]);
-}
+    {
+        $this->forge->addColumn('hotels', [
+            'type' => [
+                'type'       => 'ENUM',
+                'constraint' => ['hotel', 'resort', 'apartment', 'villa', 'guesthouse'],
+                'not null'   => true,
+                'default'    => 'hotel',
+                'after'      => 'name',
+            ],
+        ]);
+    }
 
-public function down()
-{
-    $this->forge->dropColumn('hotels', 'type_score');
-}
+    public function down()
+    {
+        $this->forge->dropColumn('hotels', 'type');
+    }
 }
