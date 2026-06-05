@@ -86,21 +86,29 @@ $poiMarkers = array_values(array_filter(array_map(static fn($p) => [
 
             <div class="form-group">
                 <label class="form-label">Skor review minimum</label>
-                <div style="display:grid; gap:0.45rem">
-                    <?php foreach ([4.5, 4, 3, 2] as $score): ?>
-                        <label style="display:flex; align-items:center; gap:0.55rem; font-size:0.88rem; cursor:pointer">
-                            <input type="radio" name="min_rating" value="<?= $score ?>"
-                                <?= ($filters['min_rating'] ?? '') == $score ? 'checked' : '' ?>>
-                            <span class="review-score" style="height:26px; min-width:38px; font-size:0.78rem"><?= number_format($score, 1) ?></span>
-                            ke atas
-                        </label>
-                    <?php endforeach; ?>
-                    <label style="display:flex; align-items:center; gap:0.55rem; font-size:0.88rem; cursor:pointer">
-                        <input type="radio" name="min_rating" value=""
-                            <?= empty($filters['min_rating']) ? 'checked' : '' ?>>
-                        Semua review
-                    </label>
+                <?php
+                    $minRating = isset($filters['min_rating']) ? (float)$filters['min_rating'] : 0;
+                ?>
+                <div style="display:flex; align-items:center; gap:0.55rem; margin-top:0.4rem">
+                    <span class="review-score" id="rating-badge"
+                        style="height:26px; min-width:42px; font-size:0.78rem;
+                                <?= $minRating == 0 ? 'opacity:0.4' : '' ?>">
+                        <?= $minRating == 0 ? '0.0' : number_format($minRating, 1) ?>
+                    </span>
+                    <input type="range"
+                        id="min_rating_slider"
+                        name="min_rating"
+                        min="0" max="10" step="0.5"
+                        value="<?= $minRating ?>"
+                        style="flex:1"
+                        oninput="updateRatingBadge(this.value)">
+                    <span style="font-size:0.82rem; color:#888">10</span>
                 </div>
+                <p style="font-size:0.8rem; color:#888; margin-top:0.3rem" id="rating-hint">
+                    <?= $minRating == 0
+                        ? 'Semua review'
+                        : 'Skor ' . number_format($minRating, 1) . ' ke atas' ?>
+                </p>
             </div>
 
             <div class="form-group">
@@ -209,6 +217,14 @@ $poiMarkers = array_values(array_filter(array_map(static fn($p) => [
 </div>
 
 <script>
+    function updateRatingBadge(val) {
+    const v = parseFloat(val);
+    const badge = document.getElementById('rating-badge');
+    const hint  = document.getElementById('rating-hint');
+    badge.textContent = v.toFixed(1);
+    badge.style.opacity = v === 0 ? '0.4' : '1';
+    hint.textContent = v === 0 ? 'Semua review' : 'Skor ' + v.toFixed(1) + ' ke atas';
+}
 (function() {
     const hotels = <?= json_encode($hotelMarkers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     const pois = <?= json_encode($poiMarkers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
