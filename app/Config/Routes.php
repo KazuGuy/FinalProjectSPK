@@ -57,9 +57,24 @@ $routes->group('evaluation', ['filter' => 'role:user'], function($routes) {
 });
 
 // ── API untuk Flutter ─────────────────────────────────────────
-$routes->group('api', function($routes) {
-    $routes->post('auth/login',             'Api\AuthController::login');
-    $routes->get('hotels',                  'Api\HotelController::index');
-    $routes->get('criterias',               'Api\CriteriaController::index');
-    $routes->post('evaluation/calculate',   'Api\EvaluationController::calculate');
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) {
+    
+    // Auth (Sekarang rutenya pas: api/login & api/register)
+    $routes->post('login', 'AuthController::login');
+    $routes->post('register', 'AuthController::register');
+    
+    // CRUD Hotel
+    $routes->resource('hotels', ['controller' => 'HotelController']);
+    
+    // Criterias
+    $routes->get('criterias', 'CriteriaController::index');
+    
+    // Evaluation (SPK)
+    $routes->post('evaluation/calculate', 'EvaluationController::calculate');
+    $routes->post('evaluation/weights', 'EvaluationController::setWeights');
+    $routes->get('evaluation/alternatives', 'EvaluationController::selectAlternatives');
+    $routes->get('evaluation/results', 'EvaluationController::results');
+    
+    // CRUD POI
+    $routes->resource('poi', ['controller' => 'PoiController']);
 });
