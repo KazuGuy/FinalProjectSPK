@@ -21,6 +21,9 @@ class PoiController extends ResourceController
     {
         $data = $this->request->getPost();
         if ($this->model->insert($data)) {
+            $id = $this->model->getInsertID();
+            $distanceModel = new \App\Models\HotelPoiDistanceModel();
+            $distanceModel->recalculateForPoi($id);
             return $this->respondCreated(['status' => 201, 'message' => 'POI berhasil ditambahkan']);
         }
         return $this->fail($this->model->errors());
@@ -37,6 +40,8 @@ class PoiController extends ResourceController
         }
 
         if ($this->model->update($id, $data)) {
+            $distanceModel = new \App\Models\HotelPoiDistanceModel();
+            $distanceModel->recalculateForPoi($id);
             return $this->respond(['status' => 200, 'message' => 'Data berhasil diupdate']);
         }
         return $this->fail('Gagal update data');

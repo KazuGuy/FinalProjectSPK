@@ -58,23 +58,22 @@ $routes->group('evaluation', ['filter' => 'role:user'], function($routes) {
 
 // ── API untuk Flutter ─────────────────────────────────────────
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) {
-    
-    // Auth (Sekarang rutenya pas: api/login & api/register)
-    $routes->post('login', 'AuthController::login');
+
+    // Auth
+    $routes->post('login',    'AuthController::login');
     $routes->post('register', 'AuthController::register');
-    
-    // CRUD Hotel
-    $routes->resource('hotels', ['controller' => 'HotelController']);
-    
-    // Criterias
-    $routes->get('criterias', 'CriteriaController::index');
-    
-    // Evaluation (SPK)
+
+    // Hotels
+    $routes->get('hotels',          'HotelController::index');
+    $routes->post('hotels',         'HotelController::create');
+    $routes->put('hotels/(:num)',    'HotelController::update/$1');
+    $routes->delete('hotels/(:num)','HotelController::delete/$1');
+
+    // Criterias & POI
+    $routes->get('criterias',       'CriteriaController::index');
+    $routes->post('criterias/(:num)', 'CriteriaController::update/$1');
+    $routes->get('poi',             'PoiController::index');
+
+    // Evaluation
     $routes->post('evaluation/calculate', 'EvaluationController::calculate');
-    $routes->post('evaluation/weights', 'EvaluationController::setWeights');
-    $routes->get('evaluation/alternatives', 'EvaluationController::selectAlternatives');
-    $routes->get('evaluation/results', 'EvaluationController::results');
-    
-    // CRUD POI
-    $routes->resource('poi', ['controller' => 'PoiController']);
 });
