@@ -73,7 +73,18 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
     $routes->get('criterias',       'CriteriaController::index');
     $routes->post('criterias/(:num)', 'CriteriaController::update/$1');
     $routes->get('poi',             'PoiController::index');
+    $routes->post('poi',            'PoiController::create');
+    $routes->put('poi/(:num)',     'PoiController::update/$1');
+    $routes->delete('poi/(:num)',  'PoiController::delete/$1');
 
     // Evaluation
     $routes->post('evaluation/calculate', 'EvaluationController::calculate');
+
+    //for CORS please jalan lah bgke
+    $routes->options('(:any)', function() {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Authorization");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        return service('response')->setStatusCode(204);
+    });
 });
