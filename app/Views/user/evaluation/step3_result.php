@@ -100,6 +100,178 @@
     </div>
 </div>
 
+<!-- Toggle tampilkan/sembunyikan proses -->
+<div style="margin-bottom:1rem">
+    <button onclick="toggleProses()" class="btn btn-ghost" id="btnProses">
+        📊 Tampilkan Proses Perhitungan
+    </button>
+</div>
+
+<div id="prosesSection" style="display:none">
+
+    <!-- Matriks Keputusan Awal -->
+    <div class="card" style="margin-bottom:1.25rem; overflow-x:auto">
+        <div class="card-header">
+            <span class="card-title">Step 1 — Matriks Keputusan Awal (X)</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alternatif</th>
+                    <?php foreach ($criterias as $c): ?>
+                        <th><?= esc($c['name']) ?><br><small style="font-weight:400;text-transform:none"><?= esc($c['code']) ?></small></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($hotels_raw as $hi => $h): ?>
+                <tr>
+                    <td><strong><?= esc($h['name']) ?></strong></td>
+                    <?php foreach ($criterias as $ci => $c): ?>
+                        <td style="font-family:monospace"><?= number_format((float)$h[$c['code']], 4) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Matriks Normalisasi -->
+    <div class="card" style="margin-bottom:1.25rem; overflow-x:auto">
+        <div class="card-header">
+            <span class="card-title">Step 2 — Matriks Normalisasi (N)</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:1rem">
+            Benefit: (x − min) / (max − min) &nbsp;|&nbsp; Cost: (max − x) / (max − min)
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alternatif</th>
+                    <?php foreach ($criterias as $c): ?>
+                        <th>
+                            <?= esc($c['code']) ?>
+                            <span class="badge badge-<?= $c['type'] ?>" style="font-size:0.65rem">
+                                <?= $c['type'] === 'benefit' ? '↑' : '↓' ?>
+                            </span>
+                        </th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($hotels_raw as $hi => $h): ?>
+                <tr>
+                    <td><strong><?= esc($h['name']) ?></strong></td>
+                    <?php foreach ($criterias as $ci => $c): ?>
+                        <td style="font-family:monospace"><?= number_format($normalized[$hi][$ci], 4) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Weighted Matrix -->
+    <div class="card" style="margin-bottom:1.25rem; overflow-x:auto">
+        <div class="card-header">
+            <span class="card-title">Step 3 — Weighted Matrix (V = w × (N + 1))</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alternatif</th>
+                    <?php foreach ($criterias as $c): ?>
+                        <th><?= esc($c['code']) ?><br><small style="font-weight:400">w=<?= number_format($c['weight'], 3) ?></small></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($hotels_raw as $hi => $h): ?>
+                <tr>
+                    <td><strong><?= esc($h['name']) ?></strong></td>
+                    <?php foreach ($criterias as $ci => $c): ?>
+                        <td style="font-family:monospace"><?= number_format($V[$hi][$ci], 4) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
+                <!-- BAA Row -->
+                <tr style="background:#fffbeb; font-weight:600">
+                    <td>G (BAA)</td>
+                    <?php foreach ($criterias as $ci => $c): ?>
+                        <td style="font-family:monospace; color:#b45309"><?= number_format($G[$ci], 4) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Q Matrix -->
+    <div class="card" style="margin-bottom:1.25rem; overflow-x:auto">
+        <div class="card-header">
+            <span class="card-title">Step 4 — Jarak dari BAA (Q = V − G)</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alternatif</th>
+                    <?php foreach ($criterias as $c): ?>
+                        <th><?= esc($c['code']) ?></th>
+                    <?php endforeach; ?>
+                    <th>Skor (S)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Reorder Q sesuai ranking results
+                $rankedHotels = array_column($results, null, 'id');
+                foreach ($results as $r):
+                    // Cari index hotel di hotels_raw
+                    $hi = null;
+                    foreach ($hotels_raw as $idx => $h) {
+                        if ($h['id'] == $r['id']) { $hi = $idx; break; }
+                    }
+                ?>
+                <tr>
+                    <td>
+                        <strong><?= esc($r['name']) ?></strong>
+                        <?php if ($r['rank'] === 1): ?>
+                            <span style="font-size:1rem">🥇</span>
+                        <?php elseif ($r['rank'] === 2): ?>
+                            <span style="font-size:1rem">🥈</span>
+                        <?php elseif ($r['rank'] === 3): ?>
+                            <span style="font-size:1rem">🥉</span>
+                        <?php endif; ?>
+                    </td>
+                    <?php foreach ($criterias as $ci => $c): ?>
+                        <td style="font-family:monospace; color:<?= $Q[$hi][$ci] >= 0 ? '#166534' : '#991b1b' ?>">
+                            <?= ($Q[$hi][$ci] >= 0 ? '+' : '') . number_format($Q[$hi][$ci], 4) ?>
+                        </td>
+                    <?php endforeach; ?>
+                    <td style="font-family:monospace; font-weight:700; color:<?= $r['score'] >= 0 ? '#166534' : '#991b1b' ?>">
+                        <?= ($r['score'] >= 0 ? '+' : '') . number_format($r['score'], 4) ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+function toggleProses() {
+    const section = document.getElementById('prosesSection');
+    const btn     = document.getElementById('btnProses');
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+        btn.textContent = '📊 Sembunyikan Proses Perhitungan';
+    } else {
+        section.style.display = 'none';
+        btn.textContent = '📊 Tampilkan Proses Perhitungan';
+    }
+}
+</script>
+
 <!-- Penjelasan -->
 <div class="card" style="background:#fffbeb; border-color:#fde68a; font-size:0.875rem; color:#78350f">
     <strong>Tentang skor MABAC:</strong>

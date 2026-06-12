@@ -21,17 +21,17 @@ class MabacModel
             $vals = array_column($hotels, $c['code']);
             $min  = min($vals);
             $max  = max($vals);
-            $diff = ($max - $min) ?: 1; // hindari pembagian nol
+            $diff = ($max - $min) ?: 1;
 
             foreach ($hotels as $hi => $hotel) {
                 $x = $hotel[$c['code']];
                 $normalized[$hi][$ci] = ($c['type'] === 'benefit')
-                    ? ($x - $min) / $diff          // benefit: makin besar makin baik
-                    : ($max - $x) / $diff;          // cost:    makin kecil makin baik
+                    ? ($x - $min) / $diff
+                    : ($max - $x) / $diff;
             }
         }
 
-        // --- STEP 2: Weighted normalized matrix (V) ---
+        // --- STEP 2: Weighted matrix (V) ---
         $weights = array_column($criterias, 'weight');
         $V = [];
         foreach ($normalized as $hi => $row) {
@@ -40,7 +40,7 @@ class MabacModel
             }
         }
 
-        // --- STEP 3: Border Approximation Area (G) ---
+        // --- STEP 3: BAA (G) ---
         $G = [];
         for ($ci = 0; $ci < $m; $ci++) {
             $product = 1;
@@ -50,7 +50,7 @@ class MabacModel
             $G[$ci] = pow($product, 1 / $n);
         }
 
-        // --- STEP 4: Jarak dari BAA (Q = V - G) ---
+        // --- STEP 4: Q = V - G ---
         $Q = [];
         foreach ($hotels as $hi => $_) {
             $Q[$hi] = array_map(
@@ -59,23 +59,31 @@ class MabacModel
             );
         }
 
-        // --- STEP 5: Total skor S = sum(Q) per hotel ---
+        // --- STEP 5 & 6: Skor & Ranking ---
         $results = [];
         foreach ($hotels as $hi => $hotel) {
             $results[] = [
                 'id'    => $hotel['id'],
                 'name'  => $hotel['name'],
                 'score' => array_sum($Q[$hi]),
-                'q'     => $Q[$hi],  // detail per kriteria (opsional)
+                'q'     => $Q[$hi],
             ];
         }
 
-        // --- STEP 6: Ranking ---
         usort($results, fn($a, $b) => $b['score'] <=> $a['score']);
         foreach ($results as $rank => &$r) {
             $r['rank'] = $rank + 1;
         }
 
-        return $results;
+        // Kembalikan detail perhitungan juga
+        return [
+            'results'    => $results,
+            'normalized' => $normalized,
+            'V'          => $V,
+            'G'          => $G,
+            'Q'          => $Q,
+            'hotels'     => $hotels,   // data mentah
+            'criterias'  => $criterias,
+        ];
     }
 }

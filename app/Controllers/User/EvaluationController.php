@@ -97,12 +97,19 @@ class EvaluationController extends BaseController
         // print_r($hotels);
         // echo '</pre>';
         // die();
-        $results = $mabac->calculate($hotels, $criterias);
-        // Bersihkan session setelah kalkulasi
+        $calculation = $mabac->calculate($hotels, $criterias);
+
         session()->remove('eval_hotel_ids');
+        session()->remove('eval_poi_id');
+
         return view('user/evaluation/step3_result', [
-            'results'   => $results,
-            'criterias' => $criterias,
+            'results'    => $calculation['results'],
+            'criterias'  => $criterias,
+            'normalized' => $calculation['normalized'],
+            'V'          => $calculation['V'],
+            'G'          => $calculation['G'],
+            'Q'          => $calculation['Q'],
+            'hotels_raw' => $calculation['hotels'],
         ]);
     }
 }
