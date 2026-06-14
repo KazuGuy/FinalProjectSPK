@@ -18,7 +18,7 @@ class UserModel extends Model
     protected $validationRules = [
         'name'     => 'required|max_length[100]',
         'email'    => 'required|valid_email|max_length[100]|is_unique[users.email]',
-        'password' => 'required|min_length[6]',
+        'password' => 'required|min_length[8]',
         'role'     => 'required|in_list[admin,user]',
     ];
 

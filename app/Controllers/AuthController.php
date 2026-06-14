@@ -52,45 +52,67 @@ class AuthController extends BaseController
         return view('auth/register');
     }
 
-    public function registerProcess()
-    {
-        $rules = [
-            'name'             => 'required|max_length[100]',
-            'email'            => 'required|valid_email|max_length[100]|is_unique[users.email]',
-            'password'         => 'required|min_length[6]',
-            'password_confirm' => 'required|matches[password]',
-        ];
+ public function registerProcess()
+{
+    $rules = [
+        'name'  => 'required|max_length[100]',
+        'email' => 'required|valid_email|max_length[100]|is_unique[users.email]',
+        
+        // Aturan password menggunakan format array untuk pesan kustom
+        'password' => [
+            // Regex: Wajib huruf besar, kecil, angka. Karakter sisanya bebas
+            'rules'  => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/]',
+            'errors' => [
+                'regex_match' => 'Password wajib mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka.',
+                'min_length'  => 'Password minimal harus 8 karakter.'
+            ]
+        ],
+        
+        'password_confirm' => [
+            'rules'  => 'required|matches[password]',
+            'errors' => [
+                'matches' => 'Konfirmasi password tidak cocok.'
+            ]
+        ],
+    ];
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
-                ->with('errors', $this->validator->getErrors());
-        }
-
-        $model = new UserModel();
-        $id = $model->insert([
-            'name'     => $this->request->getPost('name'),
-            'email'    => $this->request->getPost('email'),
-            'password' => $this->request->getPost('password'),
-            'role'     => 'user',
-        ]);
-
-        if (!$id) {
-            return redirect()->back()
-                ->withInput()
-                ->with('errors', $model->errors());
-        }
-
-        $user = $model->find($id);
-        session()->set('user', [
-            'id'    => $user['id'],
-            'name'  => $user['name'],
-            'email' => $user['email'],
-            'role'  => $user['role'],
-        ]);
-
-        return redirect()->to('/hotels')->with('success', 'Akun berhasil dibuat. Anda sudah masuk sebagai pengguna.');
+    // Cek validasi form
+    if (!$this->validate($rules)) {
+        return redirect()->back()
+            ->withInput()
+            ->with('errors', $this->validator->getErrors());
     }
+
+    $model = new UserModel();
+
+    
+    $hashedPassword = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
+
+    // Proses insert ke database
+    $id = $model->insert([
+        'name'     => $this->request->getPost('name'),
+        'email'    => $this->request->getPost('email'),
+        'password' => $hashedPassword, // Gunakan variabel password yang sudah di-hash
+        'role'     => 'user',
+    ]);
+
+    if (!$id) {
+        return redirect()->back()
+            ->withInput()
+            ->with('errors', $model->errors());
+    }
+
+    // Set session untuk auto-login setelah register
+    $user = $model->find($id);
+    session()->set('user', [
+        'id'    => $user['id'],
+        'name'  => $user['name'],
+        'email' => $user['email'],
+        'role'  => $user['role'],
+    ]);
+    
+    return redirect()->to('/hotels')->with('success', 'Akun berhasil dibuat. Anda sudah masuk sebagai pengguna.');
+}
 
     public function guestLogin()
     {

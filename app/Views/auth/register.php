@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - TravelDSS</title>
@@ -122,6 +123,31 @@
             text-align: center;
         }
         .auth-footer a { color: var(--primary-dark); font-weight: 800; text-decoration: none; }
+        
+        /* CSS tambahan untuk input-group password */
+        .input-group {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+        .input-group .btn {
+            width: auto;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+        }
+        .input-group .btn:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         @media (max-width: 820px) {
             .auth-shell { grid-template-columns: 1fr; }
             .auth-copy h1 { font-size: 2.1rem; }
@@ -163,16 +189,29 @@
                     <input type="email" name="email" class="form-control"
                         value="<?= old('email') ?>" placeholder="email@domain.com" required>
                 </div>
-                <div class="form-group">
+                
+                <div class="form-group mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control"
-                        placeholder="Minimal 6 karakter" required>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" class="form-control"
+                               placeholder="Minimal 8 karakter" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                            <i class="bi bi-eye-slash" id="iconPassword"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group mb-3">
                     <label class="form-label">Konfirmasi Password</label>
-                    <input type="password" name="password_confirm" class="form-control"
-                        placeholder="Ulangi password" required>
+                    <div class="input-group">
+                        <input type="password" name="password_confirm" id="password_confirm" class="form-control"
+                               placeholder="Ulangi password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirm">
+                            <i class="bi bi-eye-slash" id="iconPasswordConfirm"></i>
+                        </button>
+                    </div>
                 </div>
+
                 <button type="submit" class="btn btn-primary">Buat Akun User</button>
             </form>
 
@@ -181,5 +220,28 @@
             </div>
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function setupPasswordToggle(buttonId, inputId, iconId) {
+                const toggleButton = document.getElementById(buttonId);
+                const passwordInput = document.getElementById(inputId);
+                const icon = document.getElementById(iconId);
+
+                if (toggleButton && passwordInput && icon) {
+                    toggleButton.addEventListener('click', function () {
+                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordInput.setAttribute('type', type);
+                        
+                        icon.classList.toggle('bi-eye-slash');
+                        icon.classList.toggle('bi-eye');
+                    });
+                }
+            }
+
+            setupPasswordToggle('togglePassword', 'password', 'iconPassword');
+            setupPasswordToggle('togglePasswordConfirm', 'password_confirm', 'iconPasswordConfirm');
+        });
+    </script>
 </body>
 </html>
